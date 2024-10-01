@@ -24,13 +24,13 @@ ent <- read_delim(here("data","sb_ca2024entities_csv.txt"), delim = "^")
 
 
 ent <- vroom(here("data","sb_ca2024entities_csv.txt"),
-             .name_repair = ~ janitor::make_clean_names(., case = "none"),
+             .name_repair = ~ janitor::make_clean_names(., case = "snake"),
              delim = "^"
 )
 
 
 ent2 <- ent %>%
-    select(-Test_Year, -Type_ID)
+    select(-test_year, -type_id)
 
 
 districts <- c("Carmel",
@@ -62,29 +62,29 @@ districts <- c("Carmel",
 
 
 caaspp.mry <- tbl(con, "CAASPP") %>% 
-    filter(County_Code == "27",
+    filter(county_code == "27",
            # DistrictCode == "10272",
-           Test_Year >= yr.curr) %>%
+           test_year >= yr.curr) %>%
     collect() %>%
-    mutate(Subgroup_ID = as.character(Subgroup_ID)) %>%
-    left_join_codebook("CAASPP", "Subgroup_ID") %>%
-    rename(Subgroup = definition) %>%
+    mutate(subgroup_id = as.character(subgroup_id)) %>%
+    left_join_codebook("CAASPP", "subgroup_id") %>%
+    rename(subgroup = definition) %>%
     left_join(ent2) %>%
-    mutate(Type_ID = as.character(Type_ID)) %>%
-    left_join_codebook("CAASPP", "Type_ID") %>%
-    rename(Entity_Type = definition) %>%
-    mutate(across(CAASPP_Reported_Enrollment:Area_4_Percentage_Near_Standard, as.numeric))
+    mutate(type_id = as.character(type_id)) %>%
+    left_join_codebook("CAASPP", "type_id") %>%
+    rename(entity_type = definition) %>%
+    mutate(across(caaspp_reported_enrollment:area_4_percentage_near_standard, as.numeric))
 
 clean.caaspp <- function(df) {
     df %>%
-        mutate(Subgroup_ID = as.character(Subgroup_ID)) %>%
-        left_join_codebook("CAASPP", "Subgroup_ID") %>%
-        rename(Subgroup = definition) %>%
+        mutate(subgroup_id = as.character(subgroup_id)) %>%
+        left_join_codebook("CAASPP", "subgroup_id") %>%
+        rename(subgroup = definition) %>%
         left_join(ent2) %>%
-        mutate(Type_ID = as.character(Type_ID)) %>%
-        left_join_codebook("CAASPP", "Type_ID") %>%
-        rename(Entity_Type = definition) %>%
-        mutate(across(CAASPP_Reported_Enrollment:Area_4_Percentage_Near_Standard, as.numeric))
+        mutate(type_id = as.character(type_id)) %>%
+        left_join_codebook("CAASPP", "type_id") %>%
+        rename(entity_type = definition) %>%
+        mutate(across(caaspp_reported_enrollment:area_4_percentage_near_standard, as.numeric))
     
 }
 
@@ -123,7 +123,29 @@ caaspp.wide <- function(df, namer) {
 
 
 cast <- tbl(con, "CAST") %>% 
-    filter(County_Code == "27",
+    filter(# county_code == "27",
            # DistrictCode == "10272",
-           Test_Year >= "2022") %>%
-    collect() 
+           test_year >= "2022") %>%
+    collect()  %>%
+    mutate(demographic_id = as.character(demographic_id),
+           subgroup_id = demographic_id,
+           students_tested = total_students_tested) %>%
+    left_join_codebook("CAST", "demographic_id") %>%
+    rename(subgroup = definition) %>%
+    select(-district_name, -school_name) %>%
+    left_join(ent2, by = join_by(filler, county_code,
+                                 district_code, school_code) ) %>%
+    mutate(type_id = as.character(type_id)) %>%
+    left_join_codebook("CAST", "type_id") %>%
+    rename(entity_type = definition)
+
+
+cast.mry <- cast %>% 
+    filter( county_code == "27",
+        # DistrictCode == "10272",
+        test_year >= "2022") 
+
+caaspp.cast.mry <- caaspp.mry %>%
+    bind_rows(cast.mry) %>%
+    filter(test_year == yr.curr) 
+
