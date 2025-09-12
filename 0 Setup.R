@@ -75,6 +75,8 @@ caaspp.mry <- tbl(con, "CAASPP") %>%
     rename(entity_type = definition) %>%
     mutate(across(caaspp_reported_enrollment:area_4_percentage_near_standard, as.numeric))
 
+
+
 clean.caaspp <- function(df) {
     df %>%
         mutate(subgroup_id = as.character(subgroup_id)) %>%

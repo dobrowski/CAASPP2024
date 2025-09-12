@@ -10,35 +10,9 @@ logo <- mcoe_logo()
 source.link <- "Source: Smarter Balance Summative Assessment Research Files  \n https://caaspp-elpac.ets.org/"    
 
 
-# # png(here("figs", paste0("All Districts ELA Rates Meeting or Exceeding ",  Sys.Date(),".png" )),
-# #     width = 600, height = 400)
-# caaspp.mry %>%
-#     filter(Grade == 13,
-#            Subgroup_ID == "1",
-#            Test_Id == 2, # ELA 
-#            Entity_Type == "District",
-#            !is.na(Percentage_Standard_Met_and_Above)
-#     ) %>%
-# lollipop(Percentage_Standard_Met_and_Above,
-#          District_Name,
-#          "steel blue") +
-#     labs(x = "",
-#          y = "",
-#          color ="",
-#          title = ("CAASPP 2023 Math Rates Meeting or Exceeding by District"),
-#          caption = source.link) 
-# # grid::grid.raster(logo, x = 0.03, y = 0.03, just = c('left', 'bottom'), width = unit(.75, 'inches'))
-# # dev.off()
-# 
-# 
-# 
-# ggsave(here("figs", paste0("All Districts Math Rates Meeting or Exceeding ",  Sys.Date(),".png" )),
-#        width = 8, height = 6)
-# 
 
 
-
-county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue") {
+county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue", grd = 13) {
     
     test.name <-  case_match(test.id, 1 ~ "ELA",
                              2 ~ "Math",
@@ -46,7 +20,7 @@ county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue") {
            )
     
     df %>%
-        filter(grade == 13,
+        filter(grade == grd,
                subgroup_id == "1",
                test_id == test.id, # ELA 
                entity_type == "District",
@@ -58,7 +32,8 @@ county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue") {
         labs(x = "",
              y = "",
              color ="",
-             title = paste0("CAASPP ", yr.curr ," ", test.name, " Rates Meeting or Exceeding Standards by District"),
+             title = paste0("CAASPP ", yr.curr ," ", test.name, " - "  ,"Grade ",grd),
+             subtitle = "Rates Meeting or Exceeding Standards by District",
              caption = source.link
              ) 
 #    grid::grid.raster(logo, x = 0.03, y = 0.03, just = c('left', 'bottom'), width = unit(.75, 'inches'))
@@ -66,7 +41,7 @@ county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue") {
     
     
     
-    ggsave(here("figs", paste0("All Districts ", test.name, " Rates Meeting or Exceeding ",  Sys.Date(),".png" )),
+    ggsave(here("figs", paste0("All Districts ", test.name, " - " ,grd ," Rates Meeting or Exceeding ",  Sys.Date(),".png" )),
            width = 7, height = 5)
 }
 
@@ -74,6 +49,23 @@ county.graph <- function(df = caaspp.mry, test.id, kular = "steel blue") {
 county.graph(caaspp.mry, 1, "steel blue")
 
 county.graph(caaspp.mry, 2, "steel blue")
+
+
+
+for (j in 4:6) {
+    for (i in 1:2) {
+        
+        county.graph(caaspp.mry, i, "lightskyblue1", grd = j)
+    }
+    
+    
+}
+county.graph(caaspp.mry, 1, "plum1", grd = 4)
+
+county.graph(caaspp.mry, 2, "steel blue", )
+
+
+
 
 cast.mry %>%
     filter(test_year == 2024) %>%
@@ -290,7 +282,7 @@ standard.groups <- c(
 31	,	#	Economic Status	,	Socioeconomically disadvantaged	,
 # 111	,	#	Economic Status	,	Not socioeconomically disadvantaged	,
 # 6	,	#	English-Language Fluency	,	IFEP, RFEP, and EO (Fluent English proficient and English only)	,
-7	,	#	English-Language Fluency	,	IFEP (Initial fluent English proficient)	,
+# 7	,	#	English-Language Fluency	,	IFEP (Initial fluent English proficient)	,
  8	,	#	English-Language Fluency	,	RFEP (Reclassified fluent English proficient)	,
 # 120	,	#	English-Language Fluency	,	ELs enrolled less than 12 months	,
 # 142	,	#	English-Language Fluency	,	ELs enrolled 12 months or more	,
@@ -326,9 +318,9 @@ standard.groups <- c(
 # 225	,	#	Ethnicity for Not Economically Disadvantaged	,	Native Hawaiian or Pacific Islander	,
 # 226	,	#	Ethnicity for Not Economically Disadvantaged	,	White	,
 # 227	,	#	Ethnicity for Not Economically Disadvantaged	,	Two or more races	,
-4	,	#	Gender	,	Female	,
-3	,	#	Gender	,	Male	,
-28	,	#	Migrant	,	Migrant education	,
+# 4	,	#	Gender	,	Female	,
+# 3	,	#	Gender	,	Male	,
+# 28	,	#	Migrant	,	Migrant education	,
 # 29	,	#	Migrant	,	Not migrant education	,
 # 90	,	#	Parent Education	,	Not a high school graduate	,
 # 91	,	#	Parent Education	,	High school graduate	,
@@ -493,6 +485,31 @@ lolli.subgroups.school <- function(df = caaspp.mry, dist = "", schoo = "", test.
 
 lolli.subgroups.school(caaspp.cast.mry, "Soledad", "Main St", 17)
 
+
+
+
+lolli.subgroups.school(caaspp.cast.mry, "North Monterey County", "Middle", 2)
+lolli.subgroups.school(caaspp.cast.mry, "North Monterey County", "High", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Gonzales", "High", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Gonzales", "Fairview", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Salinas City", "Boronda Meadows", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Salinas City", "Lincoln", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Salinas City", "Loma Vista", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Soledad", "High", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Soledad", "Franscioni", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Soledad", "Gabilan", 2)
+
+
+
+lolli.subgroups.school(caaspp.cast.mry, "Pacific Grove", "Robert Down", 1)
+lolli.subgroups.school(caaspp.cast.mry, "Pacific Grove", "Robert Down", 2)
+lolli.subgroups.school(caaspp.cast.mry, "Pacific Grove", "Robert Down", 17)
+
+
+
+
+
+
 lolli.subgroups.school("Soledad", "Soledad High", 2)
 
 lolli.subgroups.school("Soledad", "Franscioni", 2)
@@ -626,6 +643,67 @@ for (i in schools) {
 }
 
 
+
+county.graph.w.charter <- function(df = caaspp.mry, test.id) {
+    
+    test.name <-  case_match(test.id, 1 ~ "ELA",
+                             2 ~ "Math",
+                             17 ~ "Science",
+    )
+    
+    df %>%
+        filter(grade == 13,
+               subgroup_id == "1",
+               test_id == test.id, # ELA 
+               entity_type %in% c("District","Direct Funded Charter School","Locally Funded Charter School"),
+               !is.na(percentage_standard_met_and_above)
+        ) %>%
+        mutate(lea_name = case_when(entity_type == "District" ~ district_name,
+                                    str_detect(entity_type,"harter") ~ school_name),
+               bar_kular = case_when(entity_type == "District" ~ "steelblue",
+                                    str_detect(entity_type,"harter") ~ "orange"))  %>%
+        mutate(lea_name.n = paste0(lea_name," (",students_tested,")" ))  %>%
+        
+        
+                ggplot2::ggplot( aes( y = percentage_standard_met_and_above/100,
+                                              x =forcats::fct_reorder(lea_name.n,percentage_standard_met_and_above) ,
+                                              label = scales::percent(percentage_standard_met_and_above/100, accuracy = .1))) +
+                ggplot2::geom_segment( ggplot2::aes(x=forcats::fct_reorder(lea_name.n, percentage_standard_met_and_above/100),
+                                                    xend=forcats::fct_reorder(lea_name.n, percentage_standard_met_and_above/100),
+                                                    y=0,
+                                                    yend=percentage_standard_met_and_above/100,
+                                       color=bar_kular),
+                                       size =2 ) +
+                ggplot2::geom_point( aes(color=bar_kular), size=5, alpha=0.6) +
+                ggplot2::coord_flip() +
+                ggplot2::geom_text(size = 3, color = "black") +
+                ggplot2::scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+                #  facet_grid(facets = vars(`Student Group`), scales = "free" ) +
+                ggthemes::theme_hc() +
+                mcoe_theme +
+        scale_color_identity() +
+
+        labs(x = "",
+             y = "",
+             color ="",
+             title = paste0("CAASPP ", yr.curr ," ", test.name, " Rates Meeting or Exceeding Standards by District"),
+             caption = source.link
+        )
+
+    
+     ggsave(here("figs", paste0("Charters with Districts ", test.name, " Rates Meeting or Exceeding ",  Sys.Date(),".png" )),
+            width = 12, height = 7)
+}
+
+
+county.graph.w.charter(caaspp.mry, 1)
+
+caaspp.mry %>%
+    filter(!(district_code == "10272" & school_code == "0000000"   )) %>%
+county.graph.w.charter( 2)
+
+
+
 #### Subgroups by Feeder schools ----
 
 
@@ -694,8 +772,9 @@ lolli.schools <- function(df, dist, test.id = 1, kular = "seagreen") {
                !is.na(percentage_standard_met_and_above)
         )%>%
         mutate(school_name = if_else(is.na(school_name),district_name,school_name)) %>%
+        mutate(name.n = paste0(school_name," (",students_tested ,")")) %>%
         lollipop(percentage_standard_met_and_above,
-                 school_name,
+                 name.n,
                 kular) +
         labs(x = "",
              y = "",
@@ -716,8 +795,20 @@ lolli.schools(caaspp.cast.mry, "Gonzales", 17)
 lolli.schools("Greenfield", 1)
 
 
+caaspp.mry %>%
+    mutate(school_name = if_else( (district_code == "10272" & school_code == "0000000"   ),
+                                   "Monterey County Office of Ed \n including Salinas Community, Wellington Smith, \nOpen Door, Home Charter, and Special Ed",
+                                   school_name)
+                                   ) %>%
+lolli.schools( "Monterey County Office of Ed", 2)
+
+
 
 lolli.schools(caaspp.cast.mry, "Monterey County Office of Ed", 17)
+
+
+
+
 
 for (i in test.list) {
     for (j in districts) {
@@ -749,17 +840,19 @@ lolli.schools.charters <- function(df,  test.id = 1, kular = "seagreen") {
                !is.na(percentage_standard_met_and_above)
         ) %>%
         mutate(school_name = if_else(is.na(school_name),district_name,school_name)) %>%
+        mutate(school_name.n = paste0(school_name," (",students_tested,")" ))  %>%
+        
         lollipop(percentage_standard_met_and_above,
-                 school_name,
+                 school_name.n,
                  kular) +
         labs(x = "",
              y = "",
              color ="",
-             title = paste0("Montrey County Charters ", test.name ," \n Rates Meeting or Exceeding Standards by School"),
-             caption = source.link
+             title = paste0("Monterey County Charters ", test.name ," \nRates Meeting or Exceeding Standards by School"),
+             caption = paste0(source.link,"\nNumbers in parentheses refer to number of students tested")
         ) 
     
-    ggsave(here("figs", paste0( "Montrey County Charters ", test.name,  " Rates by School ",  Sys.Date(),".png" )),
+    ggsave(here("figs", paste0( "Monterey County Charters ", test.name,  " Rates by School ",  Sys.Date(),".png" )),
            width = 6, height = 4)
     
     
@@ -989,7 +1082,7 @@ caaspp.county.comp <- tbl(con, "CAASPP") %>%
 caaspp.county.comp  %>%
     mutate(percentage_standard_met_and_above = as.numeric(percentage_standard_met_and_above)) %>%
     filter(county_code != "00") %>%
-    compare.years(county_name, 2, "Counties")
+    compare.years(county_name, 1, "Counties")
 
 
 
@@ -1038,9 +1131,9 @@ district.change <- caaspp.long2 %>%
 
 ###
 
-# caaspp.mry %>%
-#     bind_rows(caaspp.mry.prior) %>%
-    cast.mry %>%
+caaspp.mry %>%
+    bind_rows(caaspp.mry.prior) %>%
+#    cast.mry %>%
     filter(grade == 13,
           # Subgroup_ID == "1",
           subgroup_id %in%  standard.groups,
@@ -1048,7 +1141,7 @@ district.change <- caaspp.long2 %>%
           entity_type == "County",
           !is.na(percentage_standard_met_and_above)
     ) %>%
-    compare.years(subgroup, 17, "County Student Groups", kular = "orange")
+    compare.years(subgroup, 2, "County Student Groups", kular = "orange")
 
 
 
@@ -1129,6 +1222,57 @@ caaspp.mry %>%
 
 ggsave(here("figs", paste0("Monterey County Rates Meeting or Exceeding Improvements in 2024 ",  Sys.Date(),".png" )),
        width = 8, height = 6)
+
+
+
+simple.change <- function(df, tit) {
+    
+
+df %>%
+    mutate(test_year = factor(test_year),
+           test = case_match(test_id, 1 ~ "ELA",
+                             2 ~ "Math",
+                             17 ~ "Science",
+           ),
+           label = paste0(round(percentage_standard_met_and_above, 1), "%")
+    ) %>%
+    ggplot( aes(x = test, y = percentage_standard_met_and_above/100, group = test_year, fill = test_year, label = label )) +
+    geom_col(position = "dodge")+
+    geom_label(position = position_dodge(width = 1), show.legend = FALSE)+
+    mcoe_theme + 
+    scale_y_continuous(labels = scales::percent) +
+    #    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    labs(title = paste0(tit, " Rates Meeting or Exceeding Improvements in 2024"),
+         #   subtitle = paste0("Grey is ",yr.prior," and ",kular," is ",yr.curr),
+         y = "Percentage Met or Exceeded",
+         x = "",
+         caption = source.link
+    ) 
+
+
+
+ggsave(here("figs", paste0(tit, " Rates Meeting or Exceeding Improvements in 2024 ",  Sys.Date(),".png" )),
+       width = 8, height = 6)
+
+}
+
+
+
+
+caaspp.mry %>%
+    bind_rows(caaspp.mry.prior, cast.mry) %>%
+    
+    filter(grade == 13,
+           subgroup_id == "1",
+           test_year %in% c(yr.curr,yr.prior),
+           entity_type == "District",
+           str_detect(district_name, "North Monterey County"),
+           !is.na(percentage_standard_met_and_above)
+    ) %>%
+    simple.change("North Monterey County")
+
+
+
 
 
 
@@ -1425,78 +1569,6 @@ caaspp.san.antonio %>%
 
 
 
-
-
-# s.a.years <- caaspp.san.antonio %>%
-#     filter(Grade == 13,
-#            District_Code == dist.code,
-#            School_Code == "0000000",
-#            Test_Id == 2, 
-#          #  Subgroup %in% san.antonio.groups$Subgroup,
-#            # #        str_detect(District_Name,"Salinas Union"),
-#             !str_detect(Subgroup, "Not migrant"),  # missing in 2019 and so messes up order if not excluded
-#            !str_detect(Subgroup, "Graduate school"),  
-#            # !str_detect(Subgroup, "Declined"),  # missing in 2019 and so messes up order if not excluded
-#            # !str_detect(Subgroup, "Not a high school graduate"),
-#            # !str_detect(Subgroup, "English learners enrolled in school "),
-#            # !str_detect(Subgroup, "English learner"),
-#            # # #  !str_detect(Subgroup, "IFEP"),  # missing in 2019 and so messes up order if not excluded
-#            # #  !str_detect(Subgroup, "Homeless"),  # missing in 2019 and so messes up order if not excluded
-#            !is.na(Percentage_Standard_Met_and_Above),
-#            #        !str_detect(Subgroup, " - ") # to remove all the race by socio-econ status categories
-#     ) 
-# 
-# 
-# 
-# ggplot(mapping = aes(x = reorder(Subgroup, Percentage_Standard_Met_and_Above),
-#                      y = Percentage_Standard_Met_and_Above/100)) +
-#     geom_col(data =  s.a.years[s.a.years$Test_Year == "2019",],  
-#              position = "dodge" ,
-#              
-#              fill = "light grey",
-#              width = 0.75) +
-#     geom_col(data =  s.a.years[s.a.years$Test_Year == "2022",],
-#                       position = "dodge" ,
-#              width = 0.5,
-#              fill = "steel blue") +
-#     coord_flip() +
-#     mcoe_theme + 
-#     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-#     labs(title = paste0(dist.name, " CAASPP Math Rates Meeting or Exceeding"),
-#          subtitle = "Grey is 2019 and Blue is 2022",
-#          y = "",
-#          x = "",
-#          caption = source.link
-#     ) 
-
-
-
-
-### Compare three levels 
-
-# caaspp.san.antonio %>%
-#     filter(Grade == 13,
-#            Test_Year == "2022",
-#            Subgroup %in% san.antonio.groups$Subgroup,
-#            Test_Id == 1,
-#            Entity_Type != "School",
-#            Subgroup != "NA"
-#     ) %>%
-#     ggplot(aes(x = reorder(Subgroup, Percentage_Standard_Met_and_Above),
-#                y = Percentage_Standard_Met_and_Above/100,
-#                fill = Entity_Type
-#                )) +
-#     geom_col(position = "dodge") + 
-#     coord_flip() + 
-#     mcoe_theme + 
-#     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
-#     labs(title = paste0( dist.name," 2022 CAASPP ELA Percent Meet and Exceed by Student Group"),
-# #         subtitle = "Grey is 2019 and Blue is 2022",
-#          y = "",
-#          x = "",
-#          caption = source.link
-#     ) 
-
 three.levels <- function(df, test.id, dist.name) {
     
     test.name <- if_else(test.id == 1, "ELA", "Math")
@@ -1619,7 +1691,7 @@ over.time(caaspp.san.antonio,
 
 
 
-##### Numbers of Participants in MCOE numbers
+##### Numbers of Participants in MCOE numbers    ------
 
 mcoe <- caaspp.mry %>%
     filter(str_detect(district_name, "Office"),
@@ -1632,6 +1704,51 @@ mcoe <- caaspp.mry %>%
 
 
 
+#### Barbell Graphs for two year comparison ------
 
+caaspp.mry.hist %>%
+  filter(
+    test_year >= 2023,
+    district_code == "00000",
+    subgroup_id %in% standard.groups,
+    test_id == 2,
+    grade == 13
+  ) |>
+  pivot_wider(id_cols = c(subgroup) ,names_from = test_year, values_from = percentage_standard_met_and_above) %>%
+  mutate(
+    change = round2(`2024` - `2023`, digits = 1),
+    labl = if_else(change>0,paste0("+",change),paste0(change))
+  ) %>%
+  mutate(subgroup = fct_reorder(subgroup,`2024`) ) |>
+#  mutate(subgroup = factor(subgroup, levels = sort(unique(subgroup), decreasing = TRUE)))
+# mutate(subgroup = factor(subgroup, levels = sort((`2024`), decreasing = TRUE)))
 
+  
+  ggplot( aes(y = subgroup)) +
+  # connecting segment
+  geom_segment(aes(x = `2023`, xend = `2024`,  yend = subgroup), 
+               linewidth = 1.2,
+               color = "grey70",
+               arrow = arrow(#ends = "last",
+                             type = "closed",
+                             length = unit(0.1,"inches")
+                             )
+               ) +
+  # endpoints
+  geom_point(aes(x = `2023`), color = "#fed98e", size = 3) +
+  geom_point(aes(x = `2024`), color = "#fe9929", size = 3) +
+  geom_text(aes(label = labl, x = `2023`+ change/2), 
+            nudge_y = 0.5,
+            color = "grey70"
+            ) +
+  mcoe_theme +
+    labs(title = "Monterey County change in Math CAASPP between 2023 and 2024",
+         subtitle = "Student Groups Percentage Met or Exceeded",
+         x = "Percentage Met or Exceeded"
+           ) + coord_cartesian(clip = "off")
+  
+  
+  ggsave(here("figs", paste0("Change over time for Monterey County Math",  Sys.Date(),".png" )),
+         width = 8, height = 6)
+  
 ### End -----

@@ -16,24 +16,33 @@ udp.comp <- udp.with.perc %>%
     filter(# district_type == "High School District",
         low_grade == "9",
            high_grade == "12",
-           el.perc >= .22,
-           frpm.perc >= .85,
+           el.perc >= .16,
+           frpm.perc >= .80, #.85
            charter_school_y_n == "No",
            str_detect(school_type,"Public"),
-           total_enrollment >= 200
+           total_enrollment >= 1000,
+        total_enrollment <= 1500
            )
 
 write_csv(udp.comp, "San Lucas Comparison Schools.csv")
 
 
+temp <- caaspp.somoco.comp %>%
+    filter(school_name %in% udp.comp$school_name ,
+           district_name %in% udp.comp$district_name ,
+           test_id == 2) %>%
+    select(district_name, school_name, percentage_standard_met_and_above) %>%
+    mutate(percentage_standard_met_and_above = as.numeric(percentage_standard_met_and_above))
+
 
 caaspp.somoco.comp <- tbl(con, "CAASPP") %>% 
     filter(#County_Code == "27",
            # DistrictCode == "10272",
-           Test_Year >= "2023",
-           Grade == 11,
-           Subgroup_ID == "1",
-           Type_ID == "7") %>%
+           test_year >= "2024",
+           grade == 11,
+           subgroup_id == "1",
+     #      Type_ID == "7"
+           ) %>%
     collect() %>%
     select(county_code = County_Code,
            district_code = District_Code,
